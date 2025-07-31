@@ -1,0 +1,66 @@
+.container{
+    margin: 100px 0;
+}
+
+.add_wrapper{
+    text-align: center;
+}
+
+.add_wrapper input{
+    width: 400px;
+    height: 30px;
+    padding: 0 5px;
+    margin: 0 10px;
+}
+.add_wrapper button {
+    width: 70px;
+    height: 30px;
+    margin: 0 10px;
+}
+
+.list_container{
+    padding: 0;
+    margin-top: 50px;
+    margin-inline: 250px;
+}
+.list_wrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    list-style: none;
+    border-bottom: 2px solid black;
+    padding-inline: 30px;
+    margin-top: 20px;
+}
+.input{
+    width: 90%;
+    text-align: left;
+    margin-bottom: 5px;
+}
+.button{
+    width: 10%;
+}
+.checkbox{
+    width: 10%;
+    height: 20px;
+    margin: 0;
+}
+.text{
+    width: 80%;
+    font-size: 1.5rem;
+    border: none;
+    outline: none;
+    padding: 5px;
+}
+.list_wrapper button{
+    width: 50%;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 5px;
+}
+.text.done {
+    text-decoration: line-through;
+    color: #888;
+}
