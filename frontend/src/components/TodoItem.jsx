@@ -1,13 +1,22 @@
 import { useRef } from 'react';
+import { useEffect } from 'react';
 import { useContext } from "react";
 import { TodoContext } from "./providers/TodoProvider";
 
 import trashIcon from '/trash.png'
 import editIcon from '/edit.png'
 
+import axios from 'axios';
+
 export const TodoItem = () => {
     const { todos, setTodos } = useContext(TodoContext);
     const inputRefs = useRef({});
+
+    useEffect(() => {
+        axios.get('http://localhost/api/todos')  // Laravel API などに対応
+        .then((response) => setTodos(response.data))
+        .catch((error) => console.error('エラー:', error));
+    }, []);
 
     const onClickEdit = (id) => {
         setTodos(todos.map((todo) => {
@@ -30,21 +39,39 @@ export const TodoItem = () => {
     };
 
     const onEditDone = (id) => {
-        setTodos(todos.map((todo) => {
+        const editedTodo = todos.find(todo => todo.id === id);
+        axios.put(`http://localhost/api/todos/${id}`, {
+            value: editedTodo.value,
+            is_done: editedTodo.isDone,
+        })
+        .then(() => {
+            setTodos(todos.map(todo => {
                 if (todo.id === id) todo.isEditing = false;
                 return todo;
-            }
-        ));
+            }));
+        })
+        .catch((err) => console.error('更新エラー:', err));
     };
 
     const onClickDelete = (id) => {
-        setTodos(todos.filter(todo => todo.id !== id));
+        axios.delete(`http://localhost/api/todos/${id}`)
+        .then(() => {
+            setTodos(todos.filter(todo => todo.id !== id));
+        })
+        .catch((err) => console.error('削除エラー:', err));
     };
 
     const onToggleCheck = (id) => {
-        setTodos(todos.map(todo =>
-            todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
-        ));
+        const target = todos.find(todo => todo.id === id);
+        axios.patch(`http://localhost/api/todos/${id}`, {
+            is_done: !target.isDone,
+        })
+            .then(() => {
+                setTodos(todos.map(todo =>
+                    todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+                ));
+            })
+            .catch((err) => console.error('チェック切替エラー:', err));
     };
 
     return (
@@ -54,19 +81,17 @@ export const TodoItem = () => {
                     <div className='input'>
                         <input className='checkbox'
                             type="checkbox"
-                            checked={todo.isDone}
+                            checked={todo.isDone ?? false}
                             onChange={() => onToggleCheck(todo.id)}
                         />
-                        <input className={`text ${todo.isDone ? 'done' : ''}`}
+                        <input
+                            className={`text ${todo.isDone ? 'done' : ''}`}
                             type="text"
-                            value={todo.value}
+                            value={todo.value ?? ""}
                             onChange={(e) => onChangeEdit(todo.id, e.target.value)}
-                            ref={el => inputRefs.current[todo.id] = el} readOnly={!todo.isEditing}
-                            onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        onEditDone(todo.id);
-                                    }
-                                }}
+                            ref={el => inputRefs.current[todo.id] = el}
+                            readOnly={!todo.isEditing}
+                            onKeyDown={(e) => e.key === 'Enter' && onEditDone(todo.id)}
                             onBlur={() => onEditDone(todo.id)}
                         />
                     </div>

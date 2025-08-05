@@ -6,7 +6,7 @@ export const TodoContext = createContext({});
 export const TodoProvider = props => {
     const { children } = props;
 
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState([{ id: 0, value: '', isDone: false, isEditing: false }]);
 
     return (
         <TodoContext.Provider value={{todos, setTodos}}>
